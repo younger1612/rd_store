@@ -2,7 +2,7 @@
   "name": "moz-todo-react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME",
+  "homepage": "https://YOUR_GITHUB_USERNAME.github.io/rd-store-inventory",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.6.4",
