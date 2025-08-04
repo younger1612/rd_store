@@ -1,0 +1,1569 @@
+.inventory-order-page {
+  width: 100%;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 2rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.page-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.inventory-section, .order-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+}
+
+/* 庫存區域標題增強 */
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.inventory-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.add-product-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.add-product-btn:hover {
+  background: #229954;
+  transform: translateY(-1px);
+}
+
+/* 分類標籤樣式 */
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 0 20px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 15px;
+}
+
+.category-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 25px;
+  background: white;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.category-tab:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #f0f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.category-tab.active {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.category-tab .category-icon {
+  font-size: 16px;
+}
+
+.category-tab .category-name {
+  font-weight: 600;
+}
+
+.category-tab .category-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.category-tab.active .category-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.category-tab:not(.active) .category-count {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* 無商品提示 */
+.no-products {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  margin: 20px;
+  border: 2px dashed #d1d5db;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .category-tabs {
+    padding: 0 10px;
+    gap: 6px;
+  }
+  
+  .category-tab {
+    padding: 8px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  
+  .category-tab .category-icon {
+    font-size: 14px;
+  }
+  
+  .category-tab .category-count {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-tabs {
+    justify-content: center;
+  }
+  
+  .category-tab {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+  }
+  
+  .category-tab .category-name {
+    display: none;
+  }
+}
+
+/* 訂單記錄區域樣式 */
+.order-history-section {
+  margin-top: 40px;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.order-history-section h2 {
+  color: #1f2937;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  border-bottom: 3px solid #3b82f6;
+  padding-bottom: 10px;
+}
+
+.orders-table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.orders-table thead {
+  background: #f8fafc;
+}
+
+.orders-table th {
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.orders-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+
+.orders-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.order-id {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #3b82f6;
+  font-size: 13px;
+}
+
+.order-date {
+  color: #6b7280;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.order-items {
+  max-width: 300px;
+}
+
+.items-list {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  background: #f8fafc;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.item-name {
+  flex: 1;
+  font-weight: 500;
+  color: #374151;
+  margin-right: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-quantity {
+  color: #6b7280;
+  font-weight: 600;
+  margin-right: 8px;
+  min-width: 25px;
+}
+
+.item-price {
+  color: #059669;
+  font-weight: 600;
+  min-width: 80px;
+  text-align: right;
+}
+
+.order-total {
+  color: #dc2626;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.order-status {
+  text-align: center;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.completed {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* 訂單記錄響應式設計 */
+@media (max-width: 768px) {
+  .orders-table {
+    font-size: 12px;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 10px 8px;
+  }
+  
+  .order-items {
+    max-width: 200px;
+  }
+  
+  .item-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .item-name {
+    margin-right: 0;
+    white-space: normal;
+  }
+  
+  .item-quantity,
+  .item-price {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-history-section {
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .orders-table-container {
+    font-size: 11px;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 8px 4px;
+  }
+  
+  .order-items {
+    max-width: 150px;
+  }
+}
+
+/* 新增產品表單樣式 */
+.new-product-form {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.new-product-form h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.7rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* 規格設定區域 */
+.specs-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.specs-section h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.spec-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-spec-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.add-spec-btn:hover {
+  background: #2980b9;
+}
+
+.current-specs {
+  background: white;
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.current-specs h5 {
+  color: #495057;
+  margin-bottom: 0.8rem;
+}
+
+.current-specs .spec-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.8rem;
+  background: #e3f2fd;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.remove-spec-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0.2rem;
+  border-radius: 2px;
+}
+
+.remove-spec-btn:hover {
+  background: rgba(255, 0, 0, 0.1);
+}
+
+/* 表單操作按鈕 */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.save-product-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  flex: 1;
+}
+
+.save-product-btn:hover {
+  background: #229954;
+}
+
+.cancel-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  flex: 1;
+}
+
+.cancel-btn:hover {
+  background: #5a6268;
+}
+
+.inventory-section h2, .order-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.product-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.product-card:hover {
+  border-color: #3498db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.category-icon {
+  font-size: 1.2rem;
+}
+
+.category-label {
+  background: #f8f9fa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.product-name {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+.product-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #27ae60;
+}
+
+.stock {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.stock.low {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.product-specs {
+  margin-bottom: 1rem;
+}
+
+.spec-item {
+  display: inline-block;
+  background: #f8f9fa;
+  padding: 0.25rem 0.5rem;
+  margin: 0.25rem 0.25rem 0.25rem 0;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #495057;
+}
+
+.add-to-order-btn {
+  width: 100%;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-to-order-btn:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.add-to-order-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.customer-section {
+  margin-bottom: 2rem;
+}
+
+.customer-section h3 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.customer-options {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.existing-customer {
+  flex: 1;
+}
+
+.existing-customer select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.toggle-new-customer-btn {
+  background: #f39c12;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toggle-new-customer-btn:hover {
+  background: #e67e22;
+}
+
+.new-customer-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.order-items-section h3 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.no-items {
+  text-align: center;
+  color: #6c757d;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+
+
+.order-item {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.item-info h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+}
+
+.item-controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-control label {
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.quantity-control input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.price-display {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.specs-customization h5 {
+  margin: 0 0 0.5rem 0;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.spec-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.spec-input label {
+  min-width: 80px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.spec-input input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.remove-item-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.remove-item-btn:hover {
+  background: #c0392b;
+}
+
+.order-summary {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.total-amount {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.submit-order-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-order-btn:hover:not(:disabled) {
+  background: #229954;
+}
+
+.submit-order-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+/* 響應式設計改進 */
+
+/* 超小螢幕 (手機直向) */
+@media (max-width: 480px) {
+  .inventory-order-page {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .page-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .page-header p {
+    font-size: 0.9rem;
+  }
+  
+  .page-content {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .inventory-section, 
+  .order-section {
+    padding: 1rem;
+    margin: 0 -1rem;
+    border-radius: 0;
+  }
+  
+  .inventory-section h2, 
+  .order-section h2 {
+    font-size: 1.1rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .product-card {
+    padding: 0.8rem;
+  }
+  
+  .product-name {
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+  
+  .price {
+    font-size: 1rem;
+  }
+  
+  .spec-item {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .add-to-order-btn {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+  
+  .customer-options {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .toggle-new-customer-btn {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+  
+  .new-customer-form {
+    grid-template-columns: 1fr;
+    padding: 0.8rem;
+  }
+  
+  .order-item {
+    padding: 0.8rem;
+  }
+  
+  .item-controls {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .quantity-control input {
+    width: 60px;
+    padding: 0.4rem;
+  }
+  
+  .price-display {
+    align-items: start;
+    font-size: 0.8rem;
+  }
+  
+  .spec-input {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  
+  .spec-input label {
+    min-width: auto;
+    font-weight: 600;
+  }
+  
+  .remove-item-btn {
+    position: static;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  .order-summary {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+  
+  .total-amount {
+    font-size: 1rem;
+  }
+  
+  .submit-order-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 小螢幕 (手機橫向) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .inventory-order-page {
+    max-width: 100%;
+  }
+  
+  .page-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .product-card {
+    padding: 1rem;
+  }
+  
+  .customer-options {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .new-customer-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .item-controls {
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+  }
+  
+  .spec-input {
+    align-items: center;
+  }
+  
+  .remove-item-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+/* 中等螢幕 (平板) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .inventory-order-page {
+    max-width: 100%;
+  }
+  
+  .page-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .new-customer-form {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 大螢幕優化 */
+@media (min-width: 1025px) {
+  .page-content {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* 客戶資訊區域樣式 */
+.customer-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.customer-section h3 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.customer-selection {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.customer-selection .form-group {
+  flex: 1;
+}
+
+.toggle-customer-form-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.toggle-customer-form-btn:hover {
+  background: #218838;
+}
+
+.new-customer-form {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.new-customer-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 訂單表格編輯功能樣式 */
+.order-customer {
+  min-width: 200px;
+}
+
+.customer-info {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.customer-name {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.2rem;
+}
+
+.customer-phone {
+  color: #6c757d;
+  margin-bottom: 0.2rem;
+}
+
+.customer-email {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.no-customer {
+  color: #adb5bd;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.editing-customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.small-input {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.editing-items-list {
+  min-width: 300px;
+}
+
+.editing-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.editing-item-row .item-name {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.editing-item-row .item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-input {
+  width: 50px;
+  padding: 0.2rem;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.remove-item-btn-small {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.remove-item-btn-small:hover {
+  background: #c82333;
+}
+
+.editing-item-row .item-price {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #28a745;
+  min-width: 80px;
+  text-align: right;
+}
+
+.add-product-to-order {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #e9ecef;
+  border-radius: 4px;
+}
+
+.add-product-to-order h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.available-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.add-product-mini-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.add-product-mini-btn:hover {
+  background: #0056b3;
+}
+
+.order-actions {
+  min-width: 120px;
+}
+
+.editing-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-btn, .save-btn, .cancel-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.edit-btn {
+  background: #ffc107;
+  color: #212529;
+}
+
+.edit-btn:hover {
+  background: #e0a800;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #218838;
+}
+
+.cancel-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #5a6268;
+}
+
+.order-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.push-btn {
+  background: #17a2b8;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.push-btn:hover {
+  background: #138496;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
+/* 產品行動按鈕區域 */
+.product-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.adjust-stock-btn {
+  background: #6f42c1;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.adjust-stock-btn:hover {
+  background: #5a32a3;
+}
+
+/* 庫存調整面板 */
+.stock-adjustment-panel {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stock-adjustment-panel h4 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+}
+
+.adjustment-info {
+  background: #e9ecef;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.adjustment-input {
+  margin-bottom: 1rem;
+}
+
+.adjustment-input label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.adjustment-value-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.adjustment-value-input:focus {
+  outline: none;
+  border-color: #6f42c1;
+  box-shadow: 0 0 0 2px rgba(111, 66, 193, 0.25);
+}
+
+.adjustment-preview {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.adjustment-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.confirm-adjustment-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  flex: 1;
+}
+
+.confirm-adjustment-btn:hover {
+  background: #218838;
+}
+
+.cancel-adjustment-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  flex: 1;
+}
+
+.cancel-adjustment-btn:hover {
+  background: #5a6268;
+}
+
+/* 訂單記錄標題區域 */
+.order-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.order-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.order-count {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.clear-all-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.clear-all-btn:hover {
+  background: #c82333;
+}
+
+/* 無訂單狀態 */
+.no-orders {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.no-orders p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.no-orders small {
+  font-size: 0.9rem;
+  color: #868e96;
+}
+
+/* 響應式設計增強 */
+@media (max-width: 768px) {
+  .customer-selection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .new-customer-form .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .editing-item-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .editing-item-row .item-controls {
+    justify-content: space-between;
+  }
+  
+  .available-products {
+    flex-direction: column;
+  }
+  
+  .editing-actions {
+    flex-direction: row;
+  }
+}
