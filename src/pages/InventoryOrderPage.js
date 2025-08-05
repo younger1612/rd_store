@@ -30,6 +30,9 @@ const InventoryOrderPage = () => {
   const [showStockAdjustment, setShowStockAdjustment] = useState(null);
   const [stockAdjustmentValue, setStockAdjustmentValue] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [showPriceEdit, setShowPriceEdit] = useState(null);
+  const [newPrice, setNewPrice] = useState(0);
+  const [showOrderDetails, setShowOrderDetails] = useState(null);
 
   // 產品分類定義
   const categories = [
@@ -126,6 +129,7 @@ const InventoryOrderPage = () => {
       setOrderItems(prev => [...prev, {
         productId: product.id,
         productName: product.name,
+        productCategory: product.category,
         quantity: 1,
         price: product.price,
         specs: { ...product.specs }
@@ -167,7 +171,7 @@ const InventoryOrderPage = () => {
       specs: {}
     });
     setShowNewProductForm(false);
-    alert('產品新增成功！');
+    alert(`產品新增成功！已加入 ${productToAdd.category} 分類`);
   };
 
   // 新增規格到新產品
@@ -250,7 +254,7 @@ const InventoryOrderPage = () => {
         date: new Date().toLocaleString(),
         items: [...orderItems],
         totalAmount: calculateTotal(),
-        status: '已完成',
+        status: '待收訂金',
         customerName: selectedCustomer ? customers.find(c => c.id.toString() === selectedCustomer)?.name || '' : newCustomer.name,
         customerPhone: selectedCustomer ? customers.find(c => c.id.toString() === selectedCustomer)?.phone || '' : newCustomer.phone,
         customerEmail: selectedCustomer ? customers.find(c => c.id.toString() === selectedCustomer)?.email || '' : newCustomer.email
@@ -380,6 +384,7 @@ const InventoryOrderPage = () => {
         const newItems = [...prev.items, {
           productId: product.id,
           productName: product.name,
+          productCategory: product.category,
           quantity: 1,
           price: product.price,
           specs: { ...product.specs }
@@ -403,26 +408,13 @@ const InventoryOrderPage = () => {
   // 刪除訂單
   const deleteOrder = (orderId) => {
     if (window.confirm('確定要刪除這個訂單嗎？此操作無法復原。')) {
-      const orderToDelete = completedOrders.find(order => order.id === orderId);
-      
       // 如果訂單正在編輯中，先取消編輯
       if (editingOrder === orderId) {
         setEditingOrder(null);
         setEditingOrderData(null);
       }
       
-      // 還原庫存（如果需要的話）
-      if (orderToDelete) {
-        orderToDelete.items.forEach(item => {
-          setProducts(prev => prev.map(p =>
-            p.id === item.productId
-              ? { ...p, stock: p.stock + item.quantity }
-              : p
-          ));
-        });
-      }
-      
-      // 從訂單列表中移除
+      // 從訂單列表中移除（不還原庫存）
       setCompletedOrders(prev => prev.filter(order => order.id !== orderId));
       
       alert('訂單已成功刪除！');
@@ -464,9 +456,10 @@ const InventoryOrderPage = () => {
       customer: order.customerName || '未提供',
       customerUrl: order.customerEmail ? `mailto:${order.customerEmail}` : '#',
       amount: order.totalAmount,
-      status: '完成',
+      status: '待收訂金',
       date: new Date().toISOString().split('T')[0], // 格式化為 YYYY-MM-DD
       cost: Math.round(order.totalAmount * 0.8), // 假設成本為80%
+      notes: '來自庫存頁面',
       items: order.items,
       customerPhone: order.customerPhone,
       customerEmail: order.customerEmail
@@ -477,7 +470,12 @@ const InventoryOrderPage = () => {
     const updatedOrders = [summaryOrder, ...existingOrders];
     localStorage.setItem('summaryOrders', JSON.stringify(updatedOrders));
 
-    alert('訂單已成功推送到訂單總覽頁面！');
+    // 更新本地訂單狀態為已收訂金
+    setCompletedOrders(prev => prev.map(o => 
+      o.id === order.id ? { ...o, status: '已收訂金' } : o
+    ));
+
+    alert('訂單已成功推送到訂單總覽頁面，狀態已更新為已收訂金！');
   };
 
   // 開始庫存調整
@@ -529,6 +527,51 @@ const InventoryOrderPage = () => {
     
     setShowStockAdjustment(null);
     setStockAdjustmentValue(0);
+  };
+
+  // 開始價格編輯
+  const startPriceEdit = (productId, currentPrice) => {
+    setShowPriceEdit(productId);
+    setNewPrice(currentPrice);
+  };
+
+  // 取消價格編輯
+  const cancelPriceEdit = () => {
+    setShowPriceEdit(null);
+    setNewPrice(0);
+  };
+
+  // 確認價格修改
+  const confirmPriceEdit = (productId) => {
+    const priceValue = parseInt(newPrice);
+    if (isNaN(priceValue) || priceValue <= 0) {
+      alert('請輸入有效的價格');
+      return;
+    }
+
+    const oldPrice = products.find(p => p.id === productId)?.price;
+    
+    setProducts(prev => prev.map(product => {
+      if (product.id === productId) {
+        return { ...product, price: priceValue };
+      }
+      return product;
+    }));
+
+    alert(`價格修改成功！從 NT$ ${oldPrice?.toLocaleString()} 修改為 NT$ ${priceValue.toLocaleString()}`);
+    
+    setShowPriceEdit(null);
+    setNewPrice(0);
+  };
+
+  // 顯示訂單詳情彈出視窗
+  const showOrderDetailsModal = (order) => {
+    setShowOrderDetails(order);
+  };
+
+  // 關閉訂單詳情彈出視窗
+  const closeOrderDetailsModal = () => {
+    setShowOrderDetails(null);
   };
 
   const getCategoryIcon = (category) => {
@@ -713,7 +756,47 @@ const InventoryOrderPage = () => {
                   </div>
                   <h3 className="product-name">{product.name}</h3>
                   <div className="product-info">
-                    <div className="price">NT$ {product.price.toLocaleString()}</div>
+                    <div className="price">
+                      {showPriceEdit === product.id ? (
+                        <div className="price-edit">
+                          <input
+                            type="number"
+                            min="1"
+                            value={newPrice}
+                            onChange={(e) => setNewPrice(e.target.value)}
+                            className="price-input"
+                            placeholder="新價格"
+                          />
+                          <div className="price-edit-actions">
+                            <button
+                              onClick={() => confirmPriceEdit(product.id)}
+                              className="confirm-price-btn"
+                              title="確認修改"
+                            >
+                              ✅
+                            </button>
+                            <button
+                              onClick={cancelPriceEdit}
+                              className="cancel-price-btn"
+                              title="取消修改"
+                            >
+                              ❌
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="price-display">
+                          <span>NT$ {product.price.toLocaleString()}</span>
+                          <button
+                            onClick={() => startPriceEdit(product.id, product.price)}
+                            className="edit-price-btn"
+                            title="編輯價格"
+                          >
+                            ✏️
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <div className={`stock ${product.stock < 5 ? 'low' : ''}`}>
                       庫存: {product.stock}
                     </div>
@@ -857,7 +940,11 @@ const InventoryOrderPage = () => {
                 {orderItems.map(item => (
                   <div key={item.productId} className="order-item">
                     <div className="item-info">
-                      <h4>{item.productName}</h4>
+                      <div className="item-header">
+                        <span className="category-icon">{getCategoryIcon(item.productCategory)}</span>
+                        <span className="category-label">{item.productCategory}</span>
+                        <h4>{item.productName}</h4>
+                      </div>
                       <div className="item-controls">
                         <div className="quantity-control">
                           <label>數量</label>
@@ -922,15 +1009,6 @@ const InventoryOrderPage = () => {
             <h2>📋 訂單記錄</h2>
             <div className="order-history-actions">
               <span className="order-count">共 {completedOrders.length} 筆訂單</span>
-              {completedOrders.length > 0 && (
-                <button
-                  onClick={clearAllOrders}
-                  className="clear-all-btn"
-                  title="清除所有訂單記錄"
-                >
-                  🗑️ 清除所有記錄
-                </button>
-              )}
             </div>
           </div>
           
@@ -944,10 +1022,10 @@ const InventoryOrderPage = () => {
               <table className="orders-table">
                 <thead>
                   <tr>
+                    <th>詳情</th>
                     <th>訂單編號</th>
                     <th>建立時間</th>
                     <th>客戶資訊</th>
-                    <th>商品明細</th>
                     <th>總金額</th>
                     <th>狀態</th>
                     <th>操作</th>
@@ -956,6 +1034,15 @@ const InventoryOrderPage = () => {
                 <tbody>
                   {completedOrders.map(order => (
                     <tr key={order.id}>
+                      <td className="details-cell">
+                        <button
+                          onClick={() => showOrderDetailsModal(order)}
+                          className="details-btn"
+                          title="查看商品明細"
+                        >
+                          📋
+                        </button>
+                      </td>
                       <td className="order-id">#{order.id}</td>
                       <td className="order-date">{order.date}</td>
                       <td className="order-customer">
@@ -1000,64 +1087,13 @@ const InventoryOrderPage = () => {
                           </div>
                         )}
                       </td>
-                      <td className="order-items">
-                        {editingOrder === order.id ? (
-                          <div className="editing-items-list">
-                            {editingOrderData.items.map((item, index) => (
-                              <div key={index} className="editing-item-row">
-                                <span className="item-name">{item.productName}</span>
-                                <div className="item-controls">
-                                  <input
-                                    type="number"
-                                    min="1"
-                                    value={item.quantity}
-                                    onChange={(e) => updateEditingOrderItemQuantity(item.productId, parseInt(e.target.value) || 1)}
-                                    className="quantity-input"
-                                  />
-                                  <button
-                                    onClick={() => removeItemFromEditingOrder(item.productId)}
-                                    className="remove-item-btn-small"
-                                    title="移除商品"
-                                  >
-                                    ❌
-                                  </button>
-                                </div>
-                                <span className="item-price">NT$ {(item.quantity * item.price).toLocaleString()}</span>
-                              </div>
-                            ))}
-                            <div className="add-product-to-order">
-                              <h5>添加商品:</h5>
-                              <div className="available-products">
-                                {products.filter(p => p.stock > 0).slice(0, 5).map(product => (
-                                  <button
-                                    key={product.id}
-                                    onClick={() => addProductToEditingOrder(product)}
-                                    className="add-product-mini-btn"
-                                    title={`${product.name} - 庫存: ${product.stock}`}
-                                  >
-                                    + {product.name.substring(0, 15)}...
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="items-list">
-                            {order.items.map((item, index) => (
-                              <div key={index} className="item-row">
-                                <span className="item-name">{item.productName}</span>
-                                <span className="item-quantity">x{item.quantity}</span>
-                                <span className="item-price">NT$ {item.price.toLocaleString()}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </td>
                       <td className="order-total">
                         <strong>NT$ {(editingOrder === order.id ? editingOrderData.totalAmount : order.totalAmount).toLocaleString()}</strong>
                       </td>
                       <td className="order-status">
-                        <span className="status-badge completed">{order.status}</span>
+                        <span className={`status-badge ${order.status === '已收訂金' ? 'completed' : 'pending'}`}>
+                          {order.status}
+                        </span>
                       </td>
                       <td className="order-actions">
                         {editingOrder === order.id ? (
@@ -1088,10 +1124,11 @@ const InventoryOrderPage = () => {
                             </button>
                             <button
                               onClick={() => pushOrderToSummary(order)}
-                              className="push-btn"
-                              title="推送到訂單總覽"
+                              className={`push-btn ${order.status === '已收訂金' ? 'disabled' : ''}`}
+                              title={order.status === '待收訂金' ? "收取訂金並推送" : "已推送至總覽"}
+                              disabled={order.status === '已收訂金'}
                             >
-                              📤 推送
+                              {order.status === '待收訂金' ? '� 收取訂金' : '✅ 已收訂金'}
                             </button>
                             <button
                               onClick={() => deleteOrder(order.id)}
@@ -1111,6 +1148,92 @@ const InventoryOrderPage = () => {
           )}
         </div>
       </div>
+
+      {/* 訂單詳情彈出視窗 */}
+      {showOrderDetails && (
+        <div className="modal-overlay" onClick={closeOrderDetailsModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>訂單詳情 - #{showOrderDetails.id}</h3>
+              <button className="close-btn" onClick={closeOrderDetailsModal}>
+                ❌
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="order-info-section">
+                <h4>訂單資訊</h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <label>建立時間:</label>
+                    <span>{showOrderDetails.date}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>訂單狀態:</label>
+                    <span className={`status-badge ${showOrderDetails.status === '已收訂金' ? 'completed' : 'pending'}`}>
+                      {showOrderDetails.status}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <label>總金額:</label>
+                    <span className="total-amount">NT$ {showOrderDetails.totalAmount.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="customer-info-section">
+                <h4>客戶資訊</h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <label>客戶姓名:</label>
+                    <span>{showOrderDetails.customerName || '未提供'}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>聯絡電話:</label>
+                    <span>{showOrderDetails.customerPhone || '未提供'}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>電子郵件:</label>
+                    <span>{showOrderDetails.customerEmail || '未提供'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="items-info-section">
+                <h4>商品明細</h4>
+                <div className="items-detail-list">
+                  {showOrderDetails.items.map((item, index) => (
+                    <div key={index} className="item-detail-card">
+                      <div className="item-header">
+                        <span className="category-icon">{getCategoryIcon(item.productCategory)}</span>
+                        <span className="category-label">{item.productCategory}</span>
+                        <h5 className="item-name">{item.productName}</h5>
+                      </div>
+                      <div className="item-details">
+                        <div className="item-quantity">
+                          <label>數量:</label>
+                          <span>x{item.quantity}</span>
+                        </div>
+                      </div>
+                      {Object.keys(item.specs).length > 0 && (
+                        <div className="item-specs">
+                          <label>規格:</label>
+                          <div className="specs-list">
+                            {Object.entries(item.specs).map(([key, value]) => (
+                              <span key={key} className="spec-tag">
+                                {key}: {value}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

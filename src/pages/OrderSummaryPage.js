@@ -16,6 +16,39 @@ const OrderSummaryPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // 顯示訂單詳情彈跳視窗
+  const showOrderDetails = (order) => {
+    setSelectedOrder(order);
+  };
+
+  // 關閉訂單詳情彈跳視窗
+  const closeOrderDetails = () => {
+    setSelectedOrder(null);
+  };
+
+  // 獲取狀態進度
+  const getStatusProgress = (status) => {
+    const statusMap = {
+      '已收訂金': 25,
+      '代組裝': 50,
+      '出貨': 75,
+      '完成': 100
+    };
+    return statusMap[status] || 0;
+  };
+
+  // 獲取狀態顏色
+  const getStatusColor = (status) => {
+    switch (status) {
+      case '完成': return 'success';
+      case '出貨': return 'warning';
+      case '代組裝': return 'info';
+      case '已收訂金': return 'secondary';
+      default: return 'secondary';
+    }
+  };
 
   // 模擬 API 數據
   const mockOrders = [
@@ -24,18 +57,28 @@ const OrderSummaryPage = () => {
       customer: '張先生',
       customerUrl: 'https://example.com/customer/zhang',
       amount: 25000,
-      status: '完成',
+      status: '已收訂金',
       date: '2025-08-01',
-      cost: 20000
+      cost: 20000,
+      notes: '客戶指定配色',
+      items: [
+        { productName: 'Intel Core i7-13700K', quantity: 1, price: 10500 },
+        { productName: 'NVIDIA RTX 4070', quantity: 1, price: 16500 }
+      ]
     },
     {
       id: 'ORD-002',
       customer: '李小姐',
       customerUrl: 'https://example.com/customer/li',
       amount: 35000,
-      status: '配送',
+      status: '代組裝',
       date: '2025-08-02',
-      cost: 28000
+      cost: 28000,
+      notes: '加急訂單',
+      items: [
+        { productName: 'AMD Ryzen 9 7900X', quantity: 1, price: 12000 },
+        { productName: 'ASUS ROG B650E-F', quantity: 1, price: 8500 }
+      ]
     },
     {
       id: 'ORD-003',
@@ -44,16 +87,25 @@ const OrderSummaryPage = () => {
       amount: 18000,
       status: '出貨',
       date: '2025-08-03',
-      cost: 15000
+      cost: 15000,
+      notes: '',
+      items: [
+        { productName: 'Corsair DDR5-5600 16GB', quantity: 2, price: 2800 }
+      ]
     },
     {
       id: 'ORD-004',
       customer: '陳太太',
       customerUrl: 'https://example.com/customer/chen',
       amount: 42000,
-      status: '訂金',
+      status: '完成',
       date: '2025-08-04',
-      cost: 35000
+      cost: 35000,
+      notes: '客戶滿意',
+      items: [
+        { productName: 'Intel Core i9-13900K', quantity: 1, price: 15000 },
+        { productName: 'NVIDIA RTX 4080', quantity: 1, price: 25000 }
+      ]
     }
   ];
 
@@ -103,16 +155,6 @@ const OrderSummaryPage = () => {
       ...prev,
       [field]: value
     }));
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case '完成': return 'success';
-      case '配送': return 'info';
-      case '出貨': return 'warning';
-      case '訂金': return 'secondary';
-      default: return 'secondary';
-    }
   };
 
   // 開始編輯訂單
@@ -264,12 +306,14 @@ const OrderSummaryPage = () => {
           <table className="orders-table">
             <thead>
               <tr>
+                <th>詳情</th>
                 <th>訂單編號</th>
                 <th>顧客</th>
                 <th>金額</th>
                 <th>成本</th>
                 <th>利潤</th>
                 <th>狀態</th>
+                <th>備註</th>
                 <th>日期</th>
                 <th>操作</th>
               </tr>
@@ -277,6 +321,15 @@ const OrderSummaryPage = () => {
             <tbody>
               {orders.map(order => (
                 <tr key={order.id}>
+                  <td className="details-cell">
+                    <button
+                      onClick={() => showOrderDetails(order)}
+                      className="details-btn"
+                      title="查看訂單詳情"
+                    >
+                      📋
+                    </button>
+                  </td>
                   <td className="order-id">{order.id}</td>
                   <td className="customer-cell">
                     {editingOrder && editingOrder.id === order.id ? (
@@ -343,15 +396,88 @@ const OrderSummaryPage = () => {
                         onChange={(e) => updateEditingOrder('status', e.target.value)}
                         className="edit-select"
                       >
-                        <option value="訂金">訂金</option>
+                        <option value="已收訂金">已收訂金</option>
+                        <option value="代組裝">代組裝</option>
                         <option value="出貨">出貨</option>
-                        <option value="配送">配送</option>
                         <option value="完成">完成</option>
                       </select>
                     ) : (
-                      <span className={`status ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </span>
+                      <div className="status-progress">
+                        <div className={`status-label ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className={`progress-fill ${getStatusColor(order.status)}`}
+                            style={{ width: `${getStatusProgress(order.status)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                  </td>
+                  <td className="notes-cell">
+                    {editingOrder && editingOrder.id === order.id ? (
+                      <div className="notes-edit-group">
+                        <input
+                          type="text"
+                          value={editingOrder.notes || ''}
+                          onChange={(e) => updateEditingOrder('notes', e.target.value)}
+                          className="edit-input"
+                          placeholder="備註"
+                        />
+                        <div className="quick-notes">
+                          <button
+                            type="button"
+                            onClick={() => updateEditingOrder('notes', '已收訂金 NT$ 5,000')}
+                            className="quick-note-btn"
+                            title="已收訂金"
+                          >
+                            💰5K
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateEditingOrder('notes', '已收訂金 NT$ 10,000')}
+                            className="quick-note-btn"
+                            title="已收訂金"
+                          >
+                            💰10K
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateEditingOrder('notes', '張先生收款')}
+                            className="quick-note-btn"
+                            title="張先生收款"
+                          >
+                            👨張
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateEditingOrder('notes', '李小姐收款')}
+                            className="quick-note-btn"
+                            title="李小姐收款"
+                          >
+                            👩李
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateEditingOrder('notes', '客戶指定配色')}
+                            className="quick-note-btn"
+                            title="客戶指定配色"
+                          >
+                            🎨色
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateEditingOrder('notes', '加急訂單')}
+                            className="quick-note-btn"
+                            title="加急訂單"
+                          >
+                            ⚡急
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="notes">{order.notes || '-'}</span>
                     )}
                   </td>
                   <td className="date-cell">
@@ -388,6 +514,109 @@ const OrderSummaryPage = () => {
           </div>
         )}
       </div>
+
+      {/* 訂單詳情彈跳視窗 */}
+      {selectedOrder && (
+        <div className="modal-overlay" onClick={closeOrderDetails}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>訂單詳情 - {selectedOrder.id}</h3>
+              <button className="close-btn" onClick={closeOrderDetails}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="order-info-section">
+                <h4>訂單資訊</h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <label>訂單編號</label>
+                    <span>{selectedOrder.id}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>訂單日期</label>
+                    <span>{selectedOrder.date}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>訂單狀態</label>
+                    <span className={`status-label ${getStatusColor(selectedOrder.status)}`}>
+                      {selectedOrder.status}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <label>備註</label>
+                    <span>{selectedOrder.notes || '無'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="customer-info-section">
+                <h4>顧客資訊</h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <label>顧客姓名</label>
+                    <span>{selectedOrder.customer}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>顧客連結</label>
+                    <span>
+                      <a 
+                        href={selectedOrder.customerUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="customer-link"
+                      >
+                        查看顧客資料
+                      </a>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="items-info-section">
+                <h4>商品明細</h4>
+                {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                  <div className="items-detail-list">
+                    {selectedOrder.items.map((item, index) => (
+                      <div key={index} className="item-detail-card">
+                        <div className="item-header">
+                          <h5 className="item-name">{item.productName}</h5>
+                        </div>
+                        <div className="item-details">
+                          <div className="item-quantity">
+                            <label>數量</label>
+                            <span>{item.quantity}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>此訂單沒有商品明細資料</p>
+                )}
+              </div>
+
+              <div className="order-summary-section">
+                <h4>金額摘要</h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <label>訂單金額</label>
+                    <span className="total-amount">NT$ {selectedOrder.amount.toLocaleString()}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>訂單成本</label>
+                    <span>NT$ {selectedOrder.cost.toLocaleString()}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>利潤</label>
+                    <span className="profit-amount">NT$ {(selectedOrder.amount - selectedOrder.cost).toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
